@@ -1,0 +1,277 @@
+drop table if exists climat;
+drop table if exists terrain;
+drop table if exists gravite;
+drop table if exists planete;
+drop table if exists planete_climat ;
+drop table if exists planete_terrain;
+drop table if exists planete_gravite;
+drop table if exists classification;
+drop table if exists langue;
+drop table if exists personnage;
+drop table if exists espece;
+drop table if exists vehicule;
+drop table if exists vaisseau;
+drop table if exists couleur;
+drop table if exists espece_couleur;
+drop table if exists personnage_couleur;
+drop table if exists modele;
+drop table if exists fabricant;
+drop table if exists classe_vehicule;
+create table climat
+( id_climat serial
+    constraint climat_pk
+    primary key,
+        libelle_climat varchar
+);
+create table terrain
+( id_terrain serial
+    constraint terrain_pk
+    primary key,
+        libelle_terrain varchar
+);
+create table gravite
+( id_gravite serial
+    constraint gravite_pk
+    primary key,
+        valeur_gravite double precision
+);
+create table planete
+( id_planete serial
+    constraint planete_pk
+    primary key,
+        nom varchar,
+        rotation_period int,
+        orbital_period int,
+        diameter int,
+        surface_water int,
+        population int
+);
+create table planete_climat(
+    id_planete int
+        constraint planete_fk
+            references planete,
+    id_climat  int
+        constraint climat_fk
+            references climat
+            on delete cascade,
+    -- primary key
+    primary key (id_planete, id_climat)
+);
+create table planete_terrain(
+    id_planete int
+        constraint planete_fk
+            references planete,
+    id_terrain  int
+        constraint terrain_fk
+            references terrain
+            on delete cascade,
+    -- primary key
+    primary key (id_planete, id_terrain)
+);
+create table planete_gravite(
+    id_planete int
+        constraint planete_fk
+            references planete,
+    id_gravite  int
+        constraint gravite_fk
+            references gravite
+            on delete cascade,
+    -- primary key
+    primary key (id_planete, id_gravite)
+);
+create type genre as enum ('male','female', 'hermaphrodite','NA');
+create type designation as enum ('sentient','reptilian');
+create type typecouleur as enum ('skin','eyes','hair');
+create table classification
+( id_classification serial
+        constraint classification_pk
+        primary key,
+    libelle_classification varchar
+);
+create table langue
+(
+    id_langue serial
+        constraint langue_pk
+        primary key,
+    libelle_langue varchar
+);
+create table couleur
+(
+    id_couleur serial
+        constraint couleur_pk
+        primary key,
+    libelle_couleur varchar
+);
+create table espece
+( id_espece serial
+         constraint espece_pk
+         primary key,
+    name varchar,
+    hauteur_moyen int,
+    id_classification int
+        constraint classification_fk
+        references classification,
+    designation designation,
+    average_height int,
+    average_lifespan int,
+    id_langue int
+        constraint langue_fk
+        references langue,
+    id_planete int
+        constraint planete_fk
+        references planete
+);
+create table espece_couleur
+(
+    id_espece  int
+        constraint espece_fk
+            references espece
+            on delete cascade,
+    id_couleur int
+        constraint couleur_fk
+            references couleur,
+    typecouleur typecouleur,
+    -- primary key
+    primary key (id_espece, id_couleur,typecouleur)
+);
+create table personnage
+(   id_personnage serial
+        constraint personnage_pk
+        primary key,
+    name varchar,
+    height int,
+    mass int,
+    birth_year varchar,
+    genre genre,
+    id_planete int
+        constraint planete_fk
+        references planete,
+    id_espece int
+        constraint espece_fk
+        references espece
+);
+create table personnage_couleur
+(    id_personnage  int
+        constraint personnage_fk
+            references personnage
+            on delete cascade,
+    id_couleur int
+        constraint couleur_fk
+            references couleur,
+    typecouleur typecouleur,
+    -- primary key
+    primary key (id_personnage, id_couleur,typecouleur)
+);
+create table modele
+(       id_modele serial
+        constraint modele_pk
+        primary key,
+    libelle_modele varchar
+);
+create table fabricant
+(       id_fabricant serial
+        constraint fabricant_pk
+        primary key,
+    libelle_fabricant varchar
+);
+create table classe_vehicule
+( id_classe_vehicule serial
+        constraint classe_vehicule_pk
+        primary key,
+    libelle_classe_vehicule varchar
+);
+create table vehicule
+(   id_vehicule serial
+        constraint vehicule_pk
+        primary key,
+    name varchar,
+    id_modele int
+        constraint modele_fk
+        references modele,
+    id_fabricant int
+        constraint fabricant_fk
+        references fabricant,
+    costs_in_credit int,
+    longueur double precision,
+    vitesse_max int,
+    crew int,
+    passagers int,
+    capacite int,
+    consommables int,
+     id_classe int
+        constraint classe_fk
+        references classe_vehicule
+);
+create table vaisseau
+( hyperdrive_rating double precision,
+  MGLT int
+)INHERITS (vehicule);
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (1, 'temperate');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (2, 'tropical');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (3, 'frozen');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (4, 'murky');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (5, 'arid');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (6, 'windy');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (7, 'hot');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (8, 'artificial temperate ');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (9, 'frigid');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (10, 'humid');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (11, 'moist');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (12, 'polluted');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (13, 'superheated');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (14, 'subartic');
+INSERT INTO public.climat (id_climat, libelle_climat) VALUES (15, 'rocky');
+
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (1, 'grasslands');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (2, 'mountains');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (3, 'jungle,');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (4, 'rainforests');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (5, 'tundra');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (6, 'ice caves');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (7, 'mountain ranges');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (8, 'swamp ');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (9, 'gas giant');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (10, 'forests');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (11, 'lakes');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (12, 'grassy hills');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (13, 'cityscape');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (14, 'ocean');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (15, 'rock');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (16, 'desert');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (17, 'barren');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (18, 'scrublands');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (19, 'savanna');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (20, 'canyons');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (21, 'sinkholes');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (22, 'lava rivers');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (23, 'caves');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (24, 'rivers');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (25, 'airless asteroid');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (26, 'glaciers');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (27, 'ice canyons');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (28, 'fungus forests');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (29, 'fields');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (30, 'rock arches');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (31, 'plains');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (32, 'urban');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (33, 'bogs');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (34, 'rocky islands');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (35, 'seas');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (36, 'mesas');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (37, 'reefs');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (38, 'island');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (39, 'valleys');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (40, 'ash');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (41, 'toxic cloudsea');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (42, 'plateaus');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (43, 'verdant');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (44, 'acid pools');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (45, 'glaciers');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (46, 'vines');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (47, 'hills');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (48, 'cities');
+INSERT INTO public.terrain (id_terrain, libelle_terrain) VALUES (49, 'cliffs');
+
+INSERT INTO public.planete(id_planete, nom, rotation_period, orbital_period, diameter, surface_water, population) VALUES (1, 'Alderaan','24','364','12500','40','2000000000');
+
+
